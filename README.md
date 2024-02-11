@@ -1,0 +1,1 @@
+49ja apps with many strategies

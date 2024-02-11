@@ -1,0 +1,1 @@
+pyinstaller --name="49ja" -i="favicon.ico" --onefile main.py

@@ -1,0 +1,10 @@
+__pycache__
+dist
+*.spec
+.pkl
+build
+/dist
+/build
+*.pkl
+.env
+/venv

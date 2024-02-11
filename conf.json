@@ -1,0 +1,14 @@
+{
+  "username": "olabode010",
+  "password": "azeez007",
+  "stake": "50",
+  "bot_algorithm": [
+    1,
+    2
+  ],
+  "martingale": 3.0,
+  "takeProfit": 100000.0,
+  "martingaleLimit": 8,
+  "StartCash": 100000,
+  "email": "forexhup19@gmail.com"
+}
