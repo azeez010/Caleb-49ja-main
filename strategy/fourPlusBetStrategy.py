@@ -30,17 +30,9 @@ class FourPlusOnZeroColorBetStrategy(BaseStrategy):
 
             for color in colors:
                 self.gameActions.play_rainbow_game(color, stake)
+
+                self.gameState.update_value("playedGames", colors)
                 self.gameState.update_value("isGamePlayed", True)
                 return
 
         self.gameState.update_value("isGamePlayed", False)
-
-    def check_win_and_update_state(self):
-        if self.gameState.get_value("isGamePlayed"):
-            draws = self.ballUtils.get_draw_colors()
-            is_draw = self.ballUtils.check_draw_for_draw(draws)
-
-            if is_draw:
-                self.game_won_state_update()
-            else:
-                self.game_lost_state_update()

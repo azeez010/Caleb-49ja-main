@@ -50,3 +50,15 @@ class BaseStrategy:
         self.gameState.increment_value_by("gamesLost")
         self.gameState.update_value("gameLost", True)
         self.gameState.increment_value_by(GameStateType.CampaignRun.value)
+
+    def check_win_and_update_state(self):
+        if self.gameState.get_value("isGamePlayed"):
+            draws = self.ballUtils.get_draw_colors()
+            winning_color = self.ballUtils.check_draw_for_winning_color(draws)
+
+            gamesPlayed = self.gameState.get_value("playedGames")
+
+            if winning_color in gamesPlayed:
+                self.game_won_state_update()
+            else:
+                self.game_lost_state_update()
