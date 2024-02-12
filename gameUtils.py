@@ -113,6 +113,12 @@ class BallUtils(GameUtils):
             return max_key
         return None
 
+    def check_draw_for_4_color(self, color_frequency, colors):
+        for color in colors:
+            if color_frequency.get(color) == 4:
+                return True
+        return False
+
     def get_draw_numbers(self):
         ball_elements = self.driver.find_elements(By.CLASS_NAME, "ball__holder")[0]
         ball_value = ball_elements.find_elements(By.CLASS_NAME, "ball-value")

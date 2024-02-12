@@ -36,3 +36,13 @@ class FourPlusOnZeroColorBetStrategy(BaseStrategy):
                 return
 
         self.gameState.update_value("isGamePlayed", False)
+
+    def check_win_and_update_state(self):
+        if self.gameState.get_value("isGamePlayed"):
+            draws = self.ballUtils.get_draw_colors()
+            gamesPlayed = self.gameState.get_value("playedGames")
+
+            if self.ballUtils.check_draw_for_4_color(draws, gamesPlayed):
+                self.game_won_state_update()
+            else:
+                self.game_lost_state_update()
