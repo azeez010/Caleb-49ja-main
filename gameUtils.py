@@ -75,7 +75,7 @@ class GameLogic(GameUtils):
                 print(get_template.get("message"))
 
                 Notification.send_mail(self.data.get_value("email"), get_template)
-                Utils.close_game(self.driver, self.data)
+                Utils.close_game_delete_state(self.driver, self.data)
 
     def check_for_loss(self):
         pass
@@ -331,7 +331,12 @@ class Utils:
                 data_manager.update_value("playedGames", [])
 
     @staticmethod
-    def close_game(driver, data):
+    def close_game_delete_state(driver, data):
         Utils.reinitialize_game_state(data)
+        driver.close()
+        sys.exit()
+
+    @staticmethod
+    def close_game(driver, data):
         driver.close()
         sys.exit()
