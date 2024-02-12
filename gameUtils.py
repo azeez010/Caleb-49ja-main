@@ -98,6 +98,14 @@ class BallUtils(GameUtils):
             return True
         return False
 
+    def check_single_zero(self, color_frequency):
+        stringified_frequency = "".join(map(str, sorted(color_frequency.values())))
+        if "00" in stringified_frequency:
+            return False
+        elif "0" in stringified_frequency:
+            return True
+        return False
+
     def check_draw_for_winning_color(self, color_frequency):
         # Find the key with the highest value
         if not self.check_draw_for_draw(color_frequency):

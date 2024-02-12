@@ -32,6 +32,11 @@ class BaseStrategy:
         color_frequency = self.ballUtils.get_draw_colors()
         return self.ballUtils.check_draw_for_33draw(color_frequency)
 
+    @property
+    def zero_color_algorithm_check(self):
+        color_frequency = self.ballUtils.get_draw_colors()
+        return self.ballUtils.check_single_zero(color_frequency)
+
     def run(self):
         self.balls()
         self.stateController.save_state()

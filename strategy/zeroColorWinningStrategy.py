@@ -23,12 +23,15 @@ class ZeroColorWinningStrategy(BaseStrategy):
 
         stake = self.get_stake
 
-        if self.draw_33_algorithm_check:
+        if self.zero_color_algorithm_check:
             # Check Balance for if the stake would be enough for betting
-            self.gameLogic.check_balance(1, stake)
-            self.gameActions.play_totalcolor_game("draw", stake)
-            self.gameState.update_value("isGamePlayed", True)
-            return
+            colors = Utils.get_keys_by_value(self.ballUtils.get_draw_colors(), 0)
+            self.gameLogic.check_balance(len(colors), stake)
+
+            for color in colors:
+                self.gameActions.play_totalcolor_game(color, stake)
+                self.gameState.update_value("isGamePlayed", True)
+                return
 
         self.gameState.update_value("isGamePlayed", False)
 

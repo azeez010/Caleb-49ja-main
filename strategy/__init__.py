@@ -10,7 +10,7 @@ class Strategy:
     @staticmethod
     def get_stake_name(strategy_stake: int):
         strategy_map = {
-            BotStrategyType.DrawStrategy.value: BotStrategyStakeName.DrawStrategy.value,
+            BotStrategyType.DrawBlackBetStrategy.value: BotStrategyStakeName.DrawBlackBetStrategy.value,
             BotStrategyType.FourPlusOnZeroColorBetStrategy.value: BotStrategyStakeName.FourPlusOnZeroColorBetStrategy.value,
             BotStrategyType.ZeroColorWinningStrategy.value: BotStrategyStakeName.ZeroColorWinningStrategy.value,
         }
@@ -28,23 +28,28 @@ class Strategy:
 
     @staticmethod
     def strategy(algorithm: int, driver, data: DataManager):
-        stakes = DataManager("stakes.json").get_value(
-            Strategy.get_stake_name(BotStrategyType.DrawStrategy.value)
-        )
-
         if algorithm == BotStrategyType.DrawStrategy.value:
-            return DrawStrategy(
-                driver, data, DataManager("drawColorGameState.json"), stakes
-            )
+            return DrawStrategy(driver, data, DataManager("drawColorGameState.json"))
         elif algorithm == BotStrategyType.DrawBlackBetStrategy.value:
+            stakes = DataManager("stakes.json").get_value(
+                Strategy.get_stake_name(BotStrategyType.DrawBlackBetStrategy.value)
+            )
             return DrawBlackBetStrategy(
                 driver, data, DataManager("drawBlackBetGameState.json"), stakes
             )
         elif algorithm == BotStrategyType.FourPlusOnZeroColorBetStrategy.value:
+            stakes = DataManager("stakes.json").get_value(
+                Strategy.get_stake_name(
+                    BotStrategyType.FourPlusOnZeroColorBetStrategy.value
+                )
+            )
             return FourPlusOnZeroColorBetStrategy(
                 driver, data, DataManager("fourPlusOnZeroColorGameState.json"), stakes
             )
         elif algorithm == BotStrategyType.ZeroColorWinningStrategy.value:
+            stakes = DataManager("stakes.json").get_value(
+                Strategy.get_stake_name(BotStrategyType.ZeroColorWinningStrategy.value)
+            )
             return ZeroColorWinningStrategy(
                 driver, data, DataManager("ZeroColorWinningGameState.json"), stakes
             )

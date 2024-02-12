@@ -14,7 +14,7 @@ class BotStrategyType(Enum):
 
 
 class BotStrategyStakeName(Enum):
-    DrawStrategy = "draw_stakes"
+    DrawBlackBetStrategy = "draw_black_draw_stakes"
     FourPlusOnZeroColorBetStrategy = "four_plus_on_zero_color_stakes"
     ZeroColorWinningStrategy = "zero_color_winning_stakes"
 
