@@ -5,12 +5,16 @@ from gameNotification import Notification, MessageTemplate
 
 
 class DrawBlackBetStrategy(BaseStrategy):
+    strategy_name: str = "play draw no winning color on 3/3 draw strategy"
+
     @property
     def get_stake(self):
         campaign_run = self.gameState.get_int_value(GameStateType.CampaignRun.value)
 
         if campaign_run >= len(self.stakes):
-            message_template = MessageTemplate.stake_plan_exceeded_msg(campaign_run)
+            message_template = MessageTemplate.stake_plan_exceeded_msg(
+                campaign_run, self.strategy_name
+            )
             print(message_template.get("message"))
 
             Notification.send_mail(self.data.get_value("email"), message_template)
@@ -25,9 +29,11 @@ class DrawBlackBetStrategy(BaseStrategy):
 
         if self.draw_33_algorithm_check:
             # Check Balance for if the stake would be enough for betting
-            self.gameLogic.check_balance(1, stake)
+            self.gameLogic.check_balance(1, stake, self.strategy_name)
             self.gameActions.play_totalcolor_game("draw", stake)
             self.gameState.update_value("isGamePlayed", True)
+            self.counter += 1
+            print(f"{self.strategy_name} played {self.counter} times")
             return
 
         self.gameState.update_value("isGamePlayed", False)

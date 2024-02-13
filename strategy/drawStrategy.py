@@ -6,6 +6,10 @@ from gameNotification import Notification, MessageTemplate
 
 
 class DrawStrategy(BaseStrategy):
+    strategy_name: str = (
+        "play 2 total winning color on 3/3 draw strategy with martingale"
+    )
+
     @property
     def _get_stake(self):
         stake = self.gameState.get_int_value("stake")
@@ -47,7 +51,7 @@ class DrawStrategy(BaseStrategy):
             stake = self.get_stake
 
             # Check Balance for if the stake would be enough for betting
-            self.gameLogic.check_balance(len(colors), stake)
+            self.gameLogic.check_balance(len(colors), stake, self.strategy_name)
 
             if len(colors) == 2:
                 for color in colors:
@@ -55,6 +59,9 @@ class DrawStrategy(BaseStrategy):
 
                 self.gameState.update_value("playedGames", colors)
                 self.gameState.update_value("isGamePlayed", True)
+
+                self.counter += 1
+                print(f"{self.strategy_name} played {self.counter} times")
                 return
 
         self.gameState.update_value("isGamePlayed", False)

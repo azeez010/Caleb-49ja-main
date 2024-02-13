@@ -5,6 +5,9 @@ from selenium.webdriver import Chrome
 
 
 class BaseStrategy:
+    strategy_name: str = "base strategy"
+    counter: int = 0
+
     def __init__(
         self,
         driver: Chrome,

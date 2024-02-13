@@ -50,12 +50,14 @@ class GameLogic(GameUtils):
     def freeze_time(self, freeze_time=5):
         time.sleep(freeze_time)
 
-    def check_balance(self, num_of_games: int, bet_price: int):
+    def check_balance(self, num_of_games: int, bet_price: int, strategy_name: str = ""):
         bet_price *= num_of_games
         balance = self.get_account_balance
         if bet_price > balance:
             # Generate message template for take profit
-            get_template = MessageTemplate.insufficient_balance_msg(bet_price, balance)
+            get_template = MessageTemplate.insufficient_balance_msg(
+                bet_price, balance, strategy_name
+            )
             print(get_template.get("message"))
 
             Notification.send_mail(self.data.get_value("email"), get_template)
@@ -75,7 +77,7 @@ class GameLogic(GameUtils):
                 print(get_template.get("message"))
 
                 Notification.send_mail(self.data.get_value("email"), get_template)
-                Utils.close_game_delete_state(self.driver, self.data)
+                Utils.close_game(self.driver, self.data)
 
     def check_for_loss(self):
         pass

@@ -8,24 +8,24 @@ load_dotenv()
 
 class MessageTemplate:
     @staticmethod
-    def insufficient_balance_msg(bet_price, balance) -> dict:
+    def insufficient_balance_msg(bet_price, balance, strategy: str = "") -> dict:
         return {
-            "message": f"Insufficient balance, bot can not execute bet, bot is trying to place a bet of {bet_price} while the balance remaining is {balance}",
+            "message": f"Insufficient balance, bot can not execute bet, bot is trying to place a bet of {bet_price} while the balance remaining is {balance}, strategy - {strategy}",
             "subject": "Insuffient Balance",
         }
 
     @staticmethod
-    def stake_plan_exceeded_msg(campaign_run: int) -> dict:
+    def stake_plan_exceeded_msg(campaign_run: int, strategy: str = "") -> dict:
         return {
-            "message": f"The staking plan has been exceeded after {campaign_run} consecutive runs, The stake plan has reached the end, Reset state to restart",
+            "message": f"The staking plan has been exceeded after {campaign_run} consecutive runs, The stake plan has reached the end, Reset state to restart, strategy - {strategy}",
             "subject": "Stake Plan Exceeded",
         }
 
     @staticmethod
-    def martingale_limit_msg(limit_number: int) -> dict:
+    def martingale_limit_msg(limit_number: int, strategy: str = "") -> dict:
         return {
             "message": "Martingale Limit Exceeded",
-            "subject": f"Martingale Limit exceeded of {limit_number}, Reset state to restart",
+            "subject": f"Martingale Limit exceeded of {limit_number}, Reset state to restart, strategy - {strategy}",
         }
 
     @staticmethod
