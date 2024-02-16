@@ -88,6 +88,22 @@ class GameLogic(GameUtils):
 
 
 class BallUtils(GameUtils):
+    def result_from_stats_page(self, index=0):
+        self.driver.find_element(By.CSS_SELECTOR, ".stats__toggle").click()
+
+        time.sleep(4)
+        my_list = [
+            int(i.text)
+            for i in self.driver.find_elements(
+                By.CLASS_NAME,
+                "colours__item",
+            )
+        ]
+
+        paginated_list = list(Utils.paginate_list(my_list))
+        self.driver.find_element(By.CSS_SELECTOR, ".stats__toggle").click()
+        return dict(zip(["red", "green", "blue"], paginated_list[index]))
+
     def check_draw_for_draw(self, color_frequency):
         stringified_frequency = "".join(map(str, sorted(color_frequency.values())))
         if stringified_frequency in ["122", "222", "033"]:
@@ -282,6 +298,12 @@ class Utils:
         return array_2d
 
     @staticmethod
+    def paginate_list(input_list, page_size=3):
+        """Paginate a list into groups of given size."""
+        for i in range(0, len(input_list), page_size):
+            yield input_list[i : i + page_size]
+
+    @staticmethod
     def find_highest(array: list[int], num: int):
         highest_array = []
         for i, arr in enumerate(array):
@@ -302,7 +324,7 @@ class Utils:
         return keys_list
 
     @staticmethod
-    def calculate_martingale_limit(self, stake, m_p, m_l_n):
+    def calculate_martingale_limit(stake, m_p, m_l_n):
         stake = int(stake)
         for i in range(int(m_l_n)):
             stake = stake * m_p

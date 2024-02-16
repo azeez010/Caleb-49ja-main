@@ -32,12 +32,14 @@ class BaseStrategy:
 
     @property
     def draw_33_algorithm_check(self):
-        color_frequency = self.ballUtils.get_draw_colors()
+        # color_frequency = self.ballUtils.get_draw_colors()
+        color_frequency = self.ballUtils.result_from_stats_page()
         return self.ballUtils.check_draw_for_33draw(color_frequency)
 
     @property
     def zero_color_algorithm_check(self):
-        color_frequency = self.ballUtils.get_draw_colors()
+        # color_frequency = self.ballUtils.get_draw_colors()
+        color_frequency = self.ballUtils.result_from_stats_page()
         return self.ballUtils.check_single_zero(color_frequency)
 
     def run(self):
@@ -56,7 +58,8 @@ class BaseStrategy:
 
     def check_win_and_update_state(self):
         if self.gameState.get_value("isGamePlayed"):
-            draws = self.ballUtils.get_draw_colors()
+            # draws = self.ballUtils.get_draw_colors()
+            draws = self.ballUtils.result_from_stats_page()
             winning_color = self.ballUtils.check_draw_for_winning_color(draws)
 
             gamesPlayed = self.gameState.get_value("playedGames")

@@ -40,7 +40,8 @@ class DrawBlackBetStrategy(BaseStrategy):
 
     def check_win_and_update_state(self):
         if self.gameState.get_value("isGamePlayed"):
-            draws = self.ballUtils.get_draw_colors()
+            # draws = self.ballUtils.get_draw_colors()
+            draws = self.ballUtils.result_from_stats_page()
             is_draw = self.ballUtils.check_draw_for_draw(draws)
 
             if is_draw:

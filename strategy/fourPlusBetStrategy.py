@@ -27,9 +27,10 @@ class FourPlusOnZeroColorBetStrategy(BaseStrategy):
 
         stake = self.get_stake
 
-        if self.zero_color_algorithm_check:
+        if self.draw_33_algorithm_check:
             # Check Balance for if the stake would be enough for betting
-            colors = Utils.get_keys_by_value(self.ballUtils.get_draw_colors(), 0)
+            # colors = Utils.get_keys_by_value(self.ballUtils.get_draw_colors(), 0)
+            colors = Utils.get_keys_by_value(self.ballUtils.result_from_stats_page(), 0)
             self.gameLogic.check_balance(len(colors), stake, self.strategy_name)
 
             for color in colors:
@@ -46,7 +47,8 @@ class FourPlusOnZeroColorBetStrategy(BaseStrategy):
 
     def check_win_and_update_state(self):
         if self.gameState.get_value("isGamePlayed"):
-            draws = self.ballUtils.get_draw_colors()
+            # draws = self.ballUtils.get_draw_colors()
+            draws = self.ballUtils.result_from_stats_page()
             gamesPlayed = self.gameState.get_value("playedGames")
 
             if self.ballUtils.check_draw_for_4_color(draws, gamesPlayed):

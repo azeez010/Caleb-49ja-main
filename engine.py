@@ -26,12 +26,6 @@ class Engine:
 
         self.driver = webdriver.Chrome(options)
 
-        self.data = DataManager("conf.json")
-
-        self.strategies: list = Strategy.get_strategies(self.driver, self.data)
-
-        self.logics = GameLogic(self.driver, self.data)
-
         self.loopActive = False
 
         GameSelector(self)
@@ -45,10 +39,16 @@ class Engine:
             strategy.check_win_and_update_state()
 
     def start_real(self):
+        self.data = DataManager("conf.json")
+        self.logics = GameLogic(self.driver, self.data)
+        self.strategies: list = Strategy.get_strategies(self.driver, self.data)
         BootBot(self.driver, self.data, BootType.Real)
         self.bot_loop()
 
     def start_demo(self):
+        self.data = DataManager("conf.json")
+        self.logics = GameLogic(self.driver, self.data)
+        self.strategies: list = Strategy.get_strategies(self.driver, self.data)
         BootBot(self.driver, self.data, BootType.Demo)
         self.bot_loop()
 

@@ -45,7 +45,9 @@ class Settings(SelectorBase):
     algorithm_options = {
         "1": "3/3 draw, two color play with martinage",
         "2": "3/3 draw, draw color play with stake plan",
-        "3": "exit",
+        "3": "3/3 draw, play four plus",
+        "4": "3/3 draw, play missing color",
+        "5": "exit",
     }
 
     menu_setting_options = {

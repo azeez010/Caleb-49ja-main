@@ -3,10 +3,7 @@
   "password": "azeez007",
   "stake": "50",
   "bot_algorithm": [
-    1,
-    2,
-    3,
-    4
+    3
   ],
   "martingale": 2.0,
   "takeProfit": 100000.0,

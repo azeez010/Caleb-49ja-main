@@ -47,7 +47,9 @@ class DrawStrategy(BaseStrategy):
         self.gameActions.click_on_link_text(ButtonLabels.TotalColor.value)
 
         if self.draw_33_algorithm_check:
-            colors = Utils.get_keys_by_value(self.ballUtils.get_draw_colors(), 3)
+
+            colors = Utils.get_keys_by_value(self.ballUtils.result_from_stats_page(), 3)
+            # colors = Utils.get_keys_by_value(self.ballUtils.get_draw_colors(), 3)
             stake = self.get_stake
 
             # Check Balance for if the stake would be enough for betting
