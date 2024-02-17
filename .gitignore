@@ -8,3 +8,7 @@ build
 *.pkl
 .env
 /venv
+*.log
+cookies.pkl
+/logs
+/.venv

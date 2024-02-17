@@ -9,6 +9,8 @@ from gameStates import BootType
 
 from strategy import Strategy
 
+from gameLogger import logger
+
 
 chrome_options = Options()
 
@@ -21,6 +23,7 @@ options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
 class Engine:
     def __init__(self):
+        logger.info("49ja Program loaded and started")
 
         Settings()
 
@@ -30,13 +33,16 @@ class Engine:
 
         GameSelector(self)
 
-    def run_strategies(self):
+    def run_strategies(self, draws):
         for strategy in self.strategies:
-            strategy.run()
+            strategy.run(draws)
 
     def check_strategies_wins(self):
+        draws = self.logics.result_from_stats_page()
+        # draws = self.ballUtils.get_draw_colors()
+
         for strategy in self.strategies:
-            strategy.check_win_and_update_state()
+            strategy.check_win_and_update_state(draws)
 
     def start_real(self):
         self.data = DataManager("conf.json")
@@ -67,7 +73,8 @@ class Engine:
             self.track_profit_and_loss()
 
             while True:
-                self.run_strategies()
+                draws = self.logics.result_from_stats_page()
+                self.run_strategies(draws)
                 self.logics.freeze_time_for_loop()
                 self.check_strategies_wins()
                 self.logics.check_finance()
@@ -75,6 +82,8 @@ class Engine:
             self.handle_loop_exception(exc)
 
     def handle_loop_exception(self, exc):
-        print("some bad happened restarting bot to continue playing", str(exc))
+        logger.critical(
+            "some bad happened restarting bot to continue playing", str(exc)
+        )
         self.driver.refresh()
         self.bot_loop()

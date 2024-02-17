@@ -3,6 +3,7 @@ from gameUtils import Utils
 from strategy.baseStategy import BaseStrategy
 from gameStates import GameStateType
 from gameNotification import Notification, MessageTemplate
+from gameLogger import logger
 
 
 class DrawStrategy(BaseStrategy):
@@ -28,7 +29,7 @@ class DrawStrategy(BaseStrategy):
             get_template = MessageTemplate.martingale_limit_msg(
                 self.data.get_int_value("martingaleLimit")
             )
-            print(get_template.get("message"))
+            logger.info(get_template.get("message"))
 
             Notification.send_mail(self.data.get_value("email"), get_template)
             Utils.close_game(self.driver, self.data)
@@ -43,13 +44,12 @@ class DrawStrategy(BaseStrategy):
 
         return stake
 
-    def balls(self):
+    def balls(self, draws: dict = {}):
         self.gameActions.click_on_link_text(ButtonLabels.TotalColor.value)
 
-        if self.draw_33_algorithm_check:
+        if self.draw_33_algorithm_check(draws):
 
-            colors = Utils.get_keys_by_value(self.ballUtils.result_from_stats_page(), 3)
-            # colors = Utils.get_keys_by_value(self.ballUtils.get_draw_colors(), 3)
+            colors = Utils.get_keys_by_value(draws, 3)
             stake = self.get_stake
 
             # Check Balance for if the stake would be enough for betting
@@ -63,7 +63,7 @@ class DrawStrategy(BaseStrategy):
                 self.gameState.update_value("isGamePlayed", True)
 
                 self.counter += 1
-                print(f"{self.strategy_name} played {self.counter} times")
+                logger.info(f"{self.strategy_name} played {self.counter} times")
                 return
 
         self.gameState.update_value("isGamePlayed", False)

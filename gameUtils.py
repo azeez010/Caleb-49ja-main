@@ -4,6 +4,8 @@ from selenium.webdriver import Chrome
 from gameStates import GameStateType, DataConfigState
 from gameNotification import Notification, MessageTemplate
 
+from gameLogger import logger
+
 
 class GameUtils:
     def __init__(self, driver: Chrome, data):
@@ -58,7 +60,7 @@ class GameLogic(GameUtils):
             get_template = MessageTemplate.insufficient_balance_msg(
                 bet_price, balance, strategy_name
             )
-            print(get_template.get("message"))
+            logger.info(get_template.get("message"))
 
             Notification.send_mail(self.data.get_value("email"), get_template)
             Utils.close_game(self.driver, self.data)
@@ -74,7 +76,7 @@ class GameLogic(GameUtils):
                 profit_made = self.get_account_balance - start_cash
                 # Generate message template for take profit
                 get_template = MessageTemplate.take_profit_msg(profit_made)
-                print(get_template.get("message"))
+                logger.info(get_template.get("message"))
 
                 Notification.send_mail(self.data.get_value("email"), get_template)
                 Utils.close_game(self.driver, self.data)
@@ -86,8 +88,6 @@ class GameLogic(GameUtils):
         self.check_for_loss()
         self.check_for_profit()
 
-
-class BallUtils(GameUtils):
     def result_from_stats_page(self, index=0):
         self.driver.find_element(By.CSS_SELECTOR, ".stats__toggle").click()
 
@@ -104,6 +104,8 @@ class BallUtils(GameUtils):
         self.driver.find_element(By.CSS_SELECTOR, ".stats__toggle").click()
         return dict(zip(["red", "green", "blue"], paginated_list[index]))
 
+
+class BallUtils(GameUtils):
     def check_draw_for_draw(self, color_frequency):
         stringified_frequency = "".join(map(str, sorted(color_frequency.values())))
         if stringified_frequency in ["122", "222", "033"]:
@@ -167,8 +169,8 @@ class DataManager:
         if default_data and self.data == {}:
             self.data = default_data
 
-    def get_value(self, key):
-        return self.data.get(key)
+    def get_value(self, key, default=None):
+        return self.data.get(key) or default
 
     def update_value(self, key, value):
         self.data[key] = value

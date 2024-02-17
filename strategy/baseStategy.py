@@ -2,6 +2,7 @@ from gameUtils import BallUtils, StateController, DataManager, GameLogic
 from gameStates import ButtonLabels, GameStateType
 from gameActions import GameActions
 from selenium.webdriver import Chrome
+from gameLogger import logger
 
 
 class BaseStrategy:
@@ -30,38 +31,37 @@ class BaseStrategy:
     def init_game_state(self):
         self.gameState.update_value("isGamePlayed", False)
 
-    @property
-    def draw_33_algorithm_check(self):
-        # color_frequency = self.ballUtils.get_draw_colors()
-        color_frequency = self.ballUtils.result_from_stats_page()
-        return self.ballUtils.check_draw_for_33draw(color_frequency)
+    def draw_33_algorithm_check(self, draws):
+        return self.ballUtils.check_draw_for_33draw(draws)
 
-    @property
-    def zero_color_algorithm_check(self):
-        # color_frequency = self.ballUtils.get_draw_colors()
-        color_frequency = self.ballUtils.result_from_stats_page()
-        return self.ballUtils.check_single_zero(color_frequency)
+    def zero_color_algorithm_check(self, draws):
+        return self.ballUtils.check_single_zero(draws)
 
-    def run(self):
-        self.balls()
-        self.stateController.save_state()
+    def run(self, draws):
+        self.balls(draws)
+
+        if self.gameState.get_value("isGamePlayed"):
+            self.stateController.save_state()
 
     def game_won_state_update(self):
         self.gameState.increment_value_by("gamesWon")
         self.gameState.update_value("gameLost", False)
         self.gameState.update_value(GameStateType.CampaignRun.value, 0)
+        logger.info(
+            f"{self.strategy_name} won! it has won {self.gameState.get_int_value('gamesWon')} times"
+        )
 
     def game_lost_state_update(self):
         self.gameState.increment_value_by("gamesLost")
         self.gameState.update_value("gameLost", True)
         self.gameState.increment_value_by(GameStateType.CampaignRun.value)
+        logger.info(
+            f"{self.strategy_name} lost! it has lost {self.gameState.get_int_value('gamesLost')} times"
+        )
 
-    def check_win_and_update_state(self):
+    def check_win_and_update_state(self, draws):
         if self.gameState.get_value("isGamePlayed"):
-            # draws = self.ballUtils.get_draw_colors()
-            draws = self.ballUtils.result_from_stats_page()
             winning_color = self.ballUtils.check_draw_for_winning_color(draws)
-
             gamesPlayed = self.gameState.get_value("playedGames")
 
             if winning_color in gamesPlayed:
