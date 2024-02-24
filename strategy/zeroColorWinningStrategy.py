@@ -33,14 +33,12 @@ class ZeroColorWinningStrategy(BaseStrategy):
             colors = Utils.get_keys_by_value(draws, 0)
             self.gameLogic.check_balance(len(colors), stake, self.strategy_name)
 
+            self.gameState.update_value("playedGames", [])
+            self.gameState.update_value("isGamePlayed", False)
+
             for color in colors:
-                self.gameActions.play_totalcolor_game(color, stake)
-
-                self.gameState.update_value("playedGames", colors)
-                self.gameState.update_value("isGamePlayed", True)
-
-                self.counter += 1
-                logger.info(f"{self.strategy_name} played {self.counter} times")
-                return
-
-        self.gameState.update_value("isGamePlayed", False)
+                if self.gameActions.play_totalcolor_game(color, stake):
+                    self.gameState.update_list_value("playedGames", color)
+                    self.gameState.update_value("isGamePlayed", True)
+                    self.counter += 1
+                    logger.info(f"{self.strategy_name} played {self.counter} times")

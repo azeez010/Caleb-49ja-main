@@ -1,5 +1,7 @@
 from gameUtils import BallUtils, StateController, DataManager, GameLogic
-from gameStates import ButtonLabels, GameStateType
+from gameStates import GameStateType
+from gameUtils import Utils
+from gameNotification import Notification, MessageTemplate
 from gameActions import GameActions
 from selenium.webdriver import Chrome
 from gameLogger import logger
@@ -38,7 +40,9 @@ class BaseStrategy:
         return self.ballUtils.check_single_zero(draws)
 
     def run(self, draws):
-        self.balls(draws)
+        pending_bet_count = self.gameActions.get_bets_count()
+        if pending_bet_count == 0:
+            self.balls(draws)
 
         if self.gameState.get_value("isGamePlayed"):
             self.stateController.save_state()
@@ -68,3 +72,45 @@ class BaseStrategy:
                 self.game_won_state_update()
             else:
                 self.game_lost_state_update()
+
+    @property
+    def _get_stake(self):
+        stake = self.gameState.get_int_value("stake")
+        if not stake:
+            stake = self.data.get_int_value("stake")
+        return stake
+
+    @property
+    def get_stake(self):
+        stake = self._get_stake
+        martingale_multiples = (
+            self.gameState.get_int_value(GameStateType.CampaignRun.value) // 2
+        )
+
+        if martingale_multiples >= self.data.get_int_value("martingaleLimit"):
+            # Generate message template
+            get_template = MessageTemplate.martingale_limit_msg(
+                self.data.get_int_value("martingaleLimit")
+            )
+            logger.info(get_template.get("message"))
+
+            Notification.send_mail(self.data.get_value("email"), get_template)
+            Utils.close_game(self.driver, self.data)
+
+        if self.gameState.get_value("gameLost"):
+            martingale_multiples = (
+                self.gameState.get_int_value(GameStateType.CampaignRun.value) // 2
+            )
+
+            if martingale_multiples > 0:
+                stake = self.data.get_int_value("stake") * (
+                    self.data.get_float_value("martingale", 1) ** martingale_multiples
+                )
+                stake = int(round(stake))
+
+                # self.gameState.update_value("stake", stake)
+        else:
+            stake = self.data.get_int_value("stake")
+            self.gameState.update_value("stake", stake)
+
+        return stake

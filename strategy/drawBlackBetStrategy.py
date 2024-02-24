@@ -28,17 +28,16 @@ class DrawBlackBetStrategy(BaseStrategy):
         self.gameActions.click_on_link_text(ButtonLabels.TotalColor.value)
 
         stake = self.get_stake
+        self.gameState.update_value("isGamePlayed", False)
 
         if self.draw_33_algorithm_check(draws):
             # Check Balance for if the stake would be enough for betting
             self.gameLogic.check_balance(1, stake, self.strategy_name)
-            self.gameActions.play_totalcolor_game("draw", stake)
-            self.gameState.update_value("isGamePlayed", True)
-            self.counter += 1
-            logger.info(f"{self.strategy_name} played {self.counter} times")
-            return
 
-        self.gameState.update_value("isGamePlayed", False)
+            if self.gameActions.play_totalcolor_game("draw", stake):
+                self.gameState.update_value("isGamePlayed", True)
+                self.counter += 1
+                logger.info(f"{self.strategy_name} played {self.counter} times")
 
     def check_win_and_update_state(self, draws):
         if self.gameState.get_value("isGamePlayed"):

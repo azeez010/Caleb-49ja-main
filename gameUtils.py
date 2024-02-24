@@ -3,6 +3,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver import Chrome
 from gameStates import GameStateType, DataConfigState
 from gameNotification import Notification, MessageTemplate
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 from gameLogger import logger
 
@@ -11,6 +15,9 @@ class GameUtils:
     def __init__(self, driver: Chrome, data):
         self.driver = driver
         self.data = data
+        self.wait = WebDriverWait(self.driver, 5)
+
+        self.last_draw = []
 
     @property
     def get_account_balance(self):
@@ -22,17 +29,15 @@ class GameUtils:
 
     @property
     def get_time(self):
-        return int(
-            self.driver.find_element(
-                By.XPATH, "//div[@class='timeline__value-txt']"
-            ).text
-        )
+        time = self.driver.find_element(
+            By.XPATH, "//div[@class='timeline__value-txt']"
+        ).text
+        return int(time) if time else 0
 
 
 class GameLogic(GameUtils):
     def check_time(self, min_time, max_time):
         game_time = self.get_time
-
         if game_time > min_time and game_time < max_time:
             return True
         return False
@@ -42,9 +47,8 @@ class GameLogic(GameUtils):
             DataConfigState.StartCash.value, self.get_account_balance
         )
 
-    def check_time_before_freezing(self, min_time=35, max_time=45, additional_time=20):
-        if not self.check_time(min_time, max_time):
-            time.sleep(self.get_time + additional_time)
+    def check_time_before_freezing(self, additional_time=15):
+        time.sleep(self.get_time + additional_time)
 
     def freeze_time_for_loop(self, additional_time=15):
         time.sleep(self.get_time + additional_time)
@@ -88,17 +92,81 @@ class GameLogic(GameUtils):
         self.check_for_loss()
         self.check_for_profit()
 
+    @property
+    def get_list(self):
+        while True:
+            my_list = [
+                int(i.text)
+                for i in self.driver.find_elements(
+                    By.CLASS_NAME,
+                    "colours__item",
+                )[:3]
+                if i.text
+            ]
+
+            print("get list", my_list)
+            if len(my_list) == 3:
+                return my_list
+
+            time.sleep(2)
+
+    def _enforce_check_time(self):
+        while True:
+            # Get the current time
+            current_time = self.get_time
+            print(current_time, "check for current time")
+            # Check if the current time is within the desired range (35 to 45 minutes)
+            if 10 <= current_time <= 40:
+                print("Current time is within the desired range.")
+                break
+            time.sleep(3)
+
+    def get_draw_result(self):
+        draw_numbers = self.get_draw_numbers()
+
+        if self.last_draw == draw_numbers:
+            return self.result_from_stats_page()
+
+        self.last_draw = draw_numbers
+        return self.get_draw_colors()
+
+    def get_draw_numbers(self):
+        ball_elements = self.driver.find_elements(By.CLASS_NAME, "ball__holder")[0]
+        ball_value = ball_elements.find_elements(By.CLASS_NAME, "ball-value")
+        return [i.text for i in ball_value]
+
+    def get_draw_colors(self):
+        color_frequency = {"blue": 0, "green": 0, "red": 0}
+
+        ball_elements = self.driver.find_elements(By.CLASS_NAME, "ball__holder")[0]
+        ball_color = ball_elements.find_elements(By.CLASS_NAME, "ball")
+
+        colors = [i.get_attribute("class").split("-")[-1] for i in ball_color]
+
+        for color in colors:
+            color_and_its_freq = color_frequency.get(color)
+            if color_and_its_freq != None:
+                color_frequency[color] += 1
+
+        return color_frequency
+
     def result_from_stats_page(self, index=0):
+
+        # self._enforce_check_time()
+
+        self.wait.until_not(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, "div.modal__body"))
+        )
+
+        self.wait.until_not(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, "div.congratz__txt"))
+        )
+
         self.driver.find_element(By.CSS_SELECTOR, ".stats__toggle").click()
 
         time.sleep(4)
-        my_list = [
-            int(i.text)
-            for i in self.driver.find_elements(
-                By.CLASS_NAME,
-                "colours__item",
-            )
-        ]
+
+        my_list = self.get_list
 
         paginated_list = list(Utils.paginate_list(my_list))
         self.driver.find_element(By.CSS_SELECTOR, ".stats__toggle").click()
@@ -135,29 +203,9 @@ class BallUtils(GameUtils):
 
     def check_draw_for_4_color(self, color_frequency, colors):
         for color in colors:
-            if color_frequency.get(color) == 4:
+            if color_frequency.get(color) >= 4:
                 return True
         return False
-
-    def get_draw_numbers(self):
-        ball_elements = self.driver.find_elements(By.CLASS_NAME, "ball__holder")[0]
-        ball_value = ball_elements.find_elements(By.CLASS_NAME, "ball-value")
-        return [i.text for i in ball_value]
-
-    def get_draw_colors(self):
-        color_frequency = {"blue": 0, "green": 0, "red": 0}
-
-        ball_elements = self.driver.find_elements(By.CLASS_NAME, "ball__holder")[0]
-        ball_color = ball_elements.find_elements(By.CLASS_NAME, "ball")
-
-        colors = [i.get_attribute("class").split("-")[-1] for i in ball_color]
-
-        for color in colors:
-            color_and_its_freq = color_frequency.get(color)
-            if color_and_its_freq != None:
-                color_frequency[color] += 1
-
-        return color_frequency
 
 
 class DataManager:
@@ -174,6 +222,12 @@ class DataManager:
 
     def update_value(self, key, value):
         self.data[key] = value
+        self.save_to_json_file()
+
+    def update_list_value(self, key, value):
+        val = self.data.get(key) or []
+        val.append(value)
+        self.data[key] = val
         self.save_to_json_file()
 
     def increment_value_by(self, key, increment=1):

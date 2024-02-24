@@ -47,7 +47,9 @@ class Settings(SelectorBase):
         "2": "3/3 draw, draw color play with stake plan",
         "3": "3/3 draw, play four plus",
         "4": "3/3 draw, play missing color",
-        "5": "exit",
+        "5": "every hand, play red, draw then blue, green plus martingale",
+        "6": "every hand, play red, blue, green +4 plus martingale",
+        "7": "exit",
     }
 
     menu_setting_options = {

@@ -1,0 +1,13 @@
+{
+  "isGamePlayed": true,
+  "stake": 50,
+  "playedGames": [
+    "blue",
+    "green"
+  ],
+  "TotalTimesRun": 313,
+  "gamesLost": 187,
+  "gameLost": true,
+  "CampaignRun": 3,
+  "gamesWon": 104
+}

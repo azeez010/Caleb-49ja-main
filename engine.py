@@ -37,10 +37,7 @@ class Engine:
         for strategy in self.strategies:
             strategy.run(draws)
 
-    def check_strategies_wins(self):
-        draws = self.logics.result_from_stats_page()
-        # draws = self.ballUtils.get_draw_colors()
-
+    def check_strategies_wins(self, draws):
         for strategy in self.strategies:
             strategy.check_win_and_update_state(draws)
 
@@ -71,13 +68,15 @@ class Engine:
         try:
             self.logics.check_time_before_freezing()
             self.track_profit_and_loss()
+            draws = self.logics.get_draw_result()
 
             while True:
-                draws = self.logics.result_from_stats_page()
                 self.run_strategies(draws)
                 self.logics.freeze_time_for_loop()
-                self.check_strategies_wins()
+                draws = self.logics.get_draw_result()
+                self.check_strategies_wins(draws)
                 self.logics.check_finance()
+
         except Exception as exc:
             self.handle_loop_exception(exc)
 

@@ -4,6 +4,8 @@ from strategy.drawStrategy import DrawStrategy
 from strategy.drawBlackBetStrategy import DrawBlackBetStrategy
 from strategy.fourPlusBetStrategy import FourPlusOnZeroColorBetStrategy
 from strategy.zeroColorWinningStrategy import ZeroColorWinningStrategy
+from strategy.threefourplusBetStrategy import ThreeFourPlusBetStrategy
+from strategy.doubleRainbowBetStrategy import DoubleRainbowBetStrategy
 
 
 class Strategy:
@@ -52,4 +54,14 @@ class Strategy:
             )
             return ZeroColorWinningStrategy(
                 driver, data, DataManager("ZeroColorWinningGameState.json"), stakes
+            )
+
+        elif algorithm == BotStrategyType.DoubleRainbowBetStrategy.value:
+            return DoubleRainbowBetStrategy(
+                driver, data, DataManager("DoubleRainbowBetGameState.json")
+            )
+
+        elif algorithm == BotStrategyType.ThreeFourPlusBetStrategy.value:
+            return ThreeFourPlusBetStrategy(
+                driver, data, DataManager("ThreeFourPlusBetGameState.json")
             )

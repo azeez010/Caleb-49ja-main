@@ -3,9 +3,9 @@
   "password": "azeez007",
   "stake": "50",
   "bot_algorithm": [
-    3
+    5
   ],
-  "martingale": 2.0,
+  "martingale": 3.0,
   "takeProfit": 100000.0,
   "martingaleLimit": 8,
   "StartCash": 100000,

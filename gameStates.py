@@ -11,6 +11,8 @@ class BotStrategyType(Enum):
     DrawBlackBetStrategy = auto()
     FourPlusOnZeroColorBetStrategy = auto()
     ZeroColorWinningStrategy = auto()
+    DoubleRainbowBetStrategy = auto()
+    ThreeFourPlusBetStrategy = auto()
 
 
 class BotStrategyStakeName(Enum):
